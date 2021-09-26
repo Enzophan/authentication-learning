@@ -1,0 +1,43 @@
+GET http://localhost:8000
+
+
+
+###
+# @name login
+POST  http://localhost:8000/api/users/authenticate
+content-type: application/json
+
+{
+    "username":"test",
+    "password":"test"
+}
+
+
+###
+@authToken = {{login.response.body.$.refreshToken}}
+POST  http://localhost:8000/api/users/refresh_token
+content-type: application/json
+
+{
+    "username":"test",
+    "refreshToken": "{{authToken}}"
+}
+
+
+###
+@token = {{login.response.body.$.token}}
+@authToken = {{login.response.body.$.refreshToken}}
+POST  http://localhost:8000/api/users/token/reject
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "refreshToken": "{{authToken}}"
+}
+
+
+###
+@token = {{login.response.body.$.token}}
+GET  http://localhost:8000/api/users
+Content-Type: "application/json"
+Authorization: Bearer {{token}}
